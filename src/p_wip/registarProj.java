@@ -1,0 +1,695 @@
+/*
+ * To change this license header, choose License Headers in Project Properties.
+ * To change this template file, choose Tools | Templates
+ * and open the template in the editor.
+ */
+package p_wip;
+import java.awt.HeadlessException;
+import java.awt.Toolkit;
+import java.sql.*;
+import java.util.ArrayList;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+import javax.swing.JCheckBox;
+import javax.swing.JOptionPane;
+import javax.swing.table.DefaultTableModel;
+import javax.swing.table.TableModel;
+import static p_wip.connection.pass;
+import static p_wip.connection.url;
+import static p_wip.connection.user;
+import static p_wip.connection.connect;
+import java.awt.*;
+import java.awt.event.*;
+import javax.swing.*;
+
+/**
+ *
+ * 
+ * @author joana
+ */
+public class registarProj extends javax.swing.JFrame {
+    
+    Connection conn = null; 
+    
+
+    public registarProj() {
+        initComponents();
+        setIcon();
+        conn = connection.connect();
+        Show_Projetos_In_JTable();
+        jTextField9_valorRestri1.setVisible(false);
+        jTextField9_valorRestri2.setVisible(false);
+        jTextField9_valorRestri3.setVisible(false);
+        jTextField9_valorRestri4.setVisible(false);
+    }
+   
+    public Connection getConnection(){ 
+        Connection conn;
+        try{
+          conn = DriverManager.getConnection(url, user, pass);
+          return conn;
+        }catch(Exception e){
+            e.printStackTrace();
+            return null;
+        }
+    }
+
+    public ArrayList<projeto> getprojetosList(){
+        ArrayList<projeto> projetosList = new ArrayList<projeto>();
+        Connection connection = getConnection();
+        
+        String query = "SELECT * FROM `projeto`";
+        
+        Statement st;
+        ResultSet rs;
+
+        
+        try{
+            st = connection.createStatement(); //Statement = interface utilizada para executar instruções SQL.
+            rs = st.executeQuery(query);
+            projeto projeto;
+            while(rs.next()){
+                String div = "\\+"; //variavel div que possui +
+                String restricoes = ""; //variavel resricoes vazia
+                String temp=rs.getString("id_restricao"); //as restricoes da base de dados sao caregadas na variavel temp = restricoes "coladas"(tudo junto)
+                String [] rest = temp.split(div); //criacao de um array rest onde separa cada restricao onde encontrar sinal + e este desparece
+                
+                for(int i=0;i<rest.length;i++){  //percorre todo o array (tamanho) --> ja com cada restricao em cada indice (Separadas)
+                    if(rest[i]!="") restricoes += rest[i]+","; //
+                } restricoes = restricoes.substring(0, restricoes.length()-1);//tirar virgula da ultima restricao
+                
+                projeto = new projeto(rs.getInt("id"), rs.getString("nome"),rs.getDate("dataInicio"),rs.getDate("dataFim"), rs.getDouble("investimentoInicial"),rs.getDouble("taxa"),rs.getInt("id_restricao"));                
+                projetosList.add(projeto);
+            }
+        }catch(Exception e){
+            e.printStackTrace();
+        }
+        return projetosList;
+    }
+    
+    //Ver dados na tabela
+    public void Show_Projetos_In_JTable(){
+        ArrayList<projeto> list = getprojetosList();
+        DefaultTableModel model = (DefaultTableModel)tabelaProjetos.getModel();        
+        Object[] row = new Object[8];
+            for(int i = 0;i < list.size();i++){
+                row[0] = list.get(i).getId();
+                row[1] = list.get(i).getNome();
+                row[2] = list.get(i).getdataInicio();
+                row[3] = list.get(i).getdataFim();
+                row[4] = list.get(i).getinvestimentoInicial();
+                row[5] = list.get(i).gettaxa();
+                row[6] = list.get(i).getid_restricao;
+               
+       
+                
+                model.addRow(row);
+            }
+    }
+    
+    //Executar Query SQL
+    public void executarQuerySQL(String query, String message) throws SQLException{
+        Connection conn = getConnection();
+        Statement st;
+        st = conn.createStatement();
+
+        try{
+          if((st.executeUpdate(query))==1){
+              //atualizar tabela
+              DefaultTableModel model = (DefaultTableModel) tabelaProjetos.getModel();
+              model.setRowCount(0);
+              Show_Projetos_In_JTable();
+              Show_Projetos_In_JTable();
+              JOptionPane.showMessageDialog(null, "Data "+message+ "Succefully");
+          }else{
+              JOptionPane.showMessageDialog(null, "Data Not  "+message+ "Succefully");
+          }
+        }catch(SQLException | HeadlessException ex){   
+        ex.printStackTrace();}
+    }
+    
+     /**
+     * This method is called from within the constructor to initialize the form.
+     * WARNING: Do NOT modify this code. The content of this method is always
+     * regenerated by the Form Editor.
+     */
+    @SuppressWarnings("unchecked")
+    // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
+    private void initComponents() {
+
+        buttonGroup1 = new javax.swing.ButtonGroup();
+        jButton2 = new javax.swing.JButton();
+        jScrollPane1 = new javax.swing.JScrollPane();
+        tabelaProjetos = new javax.swing.JTable();
+        jPanel1 = new javax.swing.JPanel();
+        jLabel9 = new javax.swing.JLabel();
+        jTextField1_ii = new javax.swing.JTextField();
+        jLabel1 = new javax.swing.JLabel();
+        jTextField1_id = new javax.swing.JTextField();
+        jLabel2 = new javax.swing.JLabel();
+        jTextField2_nome = new javax.swing.JTextField();
+        jLabel3 = new javax.swing.JLabel();
+        jLabel6 = new javax.swing.JLabel();
+        jButton1 = new javax.swing.JButton();
+        jButton4 = new javax.swing.JButton();
+        jButton5 = new javax.swing.JButton();
+        jLabel10 = new javax.swing.JLabel();
+        jTextField2_taxa = new javax.swing.JTextField();
+        jLabel11 = new javax.swing.JLabel();
+        jLabel12 = new javax.swing.JLabel();
+        jTextField9_valorRestri1 = new javax.swing.JTextField();
+        jFormattedTextField1_dataInicio = new javax.swing.JFormattedTextField();
+        jFormattedTextField1_dataFim = new javax.swing.JFormattedTextField();
+        checkbox1_numMaq = new java.awt.Checkbox();
+        checkbox2_tempo = new java.awt.Checkbox();
+        checkbox3_mdo = new java.awt.Checkbox();
+        checkbox4_dinheiro = new java.awt.Checkbox();
+        jTextField9_valorRestri4 = new javax.swing.JTextField();
+        jTextField9_valorRestri2 = new javax.swing.JTextField();
+        jTextField9_valorRestri3 = new javax.swing.JTextField();
+
+        setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
+        setTitle("Registar Projetos");
+
+        jButton2.setFont(new java.awt.Font("Verdana", 0, 11)); // NOI18N
+        jButton2.setText("Sair");
+        jButton2.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jButton2ActionPerformed(evt);
+            }
+        });
+
+        tabelaProjetos.setFont(new java.awt.Font("Verdana", 0, 11)); // NOI18N
+        tabelaProjetos.setModel(new javax.swing.table.DefaultTableModel(
+            new Object [][] {
+
+            },
+            new String [] {
+                "Número", "Nome", "Data Início", "Data Fim", "Investimento Inicial", "Taxa", "Restrições", "Valor Restrição"
+            }
+        ));
+        tabelaProjetos.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                tabelaProjetosMouseClicked(evt);
+            }
+        });
+        jScrollPane1.setViewportView(tabelaProjetos);
+
+        jPanel1.setBorder(javax.swing.BorderFactory.createTitledBorder(javax.swing.BorderFactory.createTitledBorder("Caraterísticas do Projeto"), "", javax.swing.border.TitledBorder.DEFAULT_JUSTIFICATION, javax.swing.border.TitledBorder.DEFAULT_POSITION, new java.awt.Font("Verdana", 1, 11))); // NOI18N
+
+        jLabel9.setFont(new java.awt.Font("Verdana", 0, 11)); // NOI18N
+        jLabel9.setText("Taxa");
+
+        jLabel1.setFont(new java.awt.Font("Verdana", 0, 11)); // NOI18N
+        jLabel1.setText("Projeto nº");
+
+        jTextField1_id.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jTextField1_idActionPerformed(evt);
+            }
+        });
+
+        jLabel2.setFont(new java.awt.Font("Verdana", 0, 11)); // NOI18N
+        jLabel2.setText("Nome");
+
+        jLabel3.setFont(new java.awt.Font("Verdana", 0, 11)); // NOI18N
+        jLabel3.setText("Data de Início");
+
+        jLabel6.setFont(new java.awt.Font("Verdana", 0, 11)); // NOI18N
+        jLabel6.setText("Data de Fim");
+
+        jButton1.setFont(new java.awt.Font("Verdana", 0, 11)); // NOI18N
+        jButton1.setText("Registar");
+        jButton1.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jButton1ActionPerformed(evt);
+            }
+        });
+
+        jButton4.setFont(new java.awt.Font("Verdana", 0, 11)); // NOI18N
+        jButton4.setText("Editar");
+        jButton4.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jButton4ActionPerformed(evt);
+            }
+        });
+
+        jButton5.setFont(new java.awt.Font("Verdana", 0, 11)); // NOI18N
+        jButton5.setText("Eliminar");
+        jButton5.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jButton5ActionPerformed(evt);
+            }
+        });
+
+        jLabel10.setFont(new java.awt.Font("Verdana", 0, 11)); // NOI18N
+        jLabel10.setText("Investimento Inicial");
+
+        jLabel11.setFont(new java.awt.Font("Verdana", 0, 11)); // NOI18N
+        jLabel11.setText("Restrições");
+
+        jLabel12.setFont(new java.awt.Font("Verdana", 0, 11)); // NOI18N
+        jLabel12.setText("Valor da Restrição");
+
+        jTextField9_valorRestri1.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jTextField9_valorRestri1ActionPerformed(evt);
+            }
+        });
+
+        checkbox1_numMaq.setFont(new java.awt.Font("Verdana", 0, 11)); // NOI18N
+        checkbox1_numMaq.setLabel("Número de Máquinas");
+        checkbox1_numMaq.addItemListener(new java.awt.event.ItemListener() {
+            public void itemStateChanged(java.awt.event.ItemEvent evt) {
+                checkbox1_numMaqItemStateChanged(evt);
+            }
+        });
+
+        checkbox2_tempo.setFont(new java.awt.Font("Verdana", 0, 11)); // NOI18N
+        checkbox2_tempo.setLabel("Tempo");
+        checkbox2_tempo.addItemListener(new java.awt.event.ItemListener() {
+            public void itemStateChanged(java.awt.event.ItemEvent evt) {
+                checkbox2_tempoItemStateChanged(evt);
+            }
+        });
+
+        checkbox3_mdo.setFont(new java.awt.Font("Verdana", 0, 11)); // NOI18N
+        checkbox3_mdo.setLabel("Mão-de-Obra");
+        checkbox3_mdo.addItemListener(new java.awt.event.ItemListener() {
+            public void itemStateChanged(java.awt.event.ItemEvent evt) {
+                checkbox3_mdoItemStateChanged(evt);
+            }
+        });
+
+        checkbox4_dinheiro.setFont(new java.awt.Font("Verdana", 0, 11)); // NOI18N
+        checkbox4_dinheiro.setLabel("Dinheiro");
+        checkbox4_dinheiro.addItemListener(new java.awt.event.ItemListener() {
+            public void itemStateChanged(java.awt.event.ItemEvent evt) {
+                checkbox4_dinheiroItemStateChanged(evt);
+            }
+        });
+
+        jTextField9_valorRestri4.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jTextField9_valorRestri4ActionPerformed(evt);
+            }
+        });
+
+        jTextField9_valorRestri2.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jTextField9_valorRestri2ActionPerformed(evt);
+            }
+        });
+
+        jTextField9_valorRestri3.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jTextField9_valorRestri3ActionPerformed(evt);
+            }
+        });
+
+        javax.swing.GroupLayout jPanel1Layout = new javax.swing.GroupLayout(jPanel1);
+        jPanel1.setLayout(jPanel1Layout);
+        jPanel1Layout.setHorizontalGroup(
+            jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(jPanel1Layout.createSequentialGroup()
+                .addContainerGap()
+                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addGroup(jPanel1Layout.createSequentialGroup()
+                        .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addComponent(jLabel1)
+                            .addComponent(jLabel2)
+                            .addComponent(jLabel3)
+                            .addComponent(jLabel6))
+                        .addGap(51, 51, 51)
+                        .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addComponent(jTextField1_id, javax.swing.GroupLayout.PREFERRED_SIZE, 88, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addComponent(jFormattedTextField1_dataFim, javax.swing.GroupLayout.PREFERRED_SIZE, 136, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addComponent(jTextField2_nome, javax.swing.GroupLayout.PREFERRED_SIZE, 169, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addComponent(jFormattedTextField1_dataInicio, javax.swing.GroupLayout.PREFERRED_SIZE, 136, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                    .addGroup(jPanel1Layout.createSequentialGroup()
+                        .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addComponent(jLabel10)
+                            .addComponent(jLabel9))
+                        .addGap(18, 18, 18)
+                        .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addComponent(jTextField2_taxa, javax.swing.GroupLayout.PREFERRED_SIZE, 49, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addComponent(jTextField1_ii, javax.swing.GroupLayout.PREFERRED_SIZE, 49, javax.swing.GroupLayout.PREFERRED_SIZE))))
+                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addGroup(jPanel1Layout.createSequentialGroup()
+                        .addGap(190, 190, 190)
+                        .addComponent(jLabel11))
+                    .addGroup(jPanel1Layout.createSequentialGroup()
+                        .addGap(207, 207, 207)
+                        .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addComponent(checkbox3_mdo, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addComponent(checkbox2_tempo, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addComponent(checkbox4_dinheiro, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addComponent(checkbox1_numMaq, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))))
+                .addGap(24, 24, 24)
+                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addGroup(jPanel1Layout.createSequentialGroup()
+                        .addComponent(jButton1)
+                        .addGap(18, 18, 18)
+                        .addComponent(jButton4)
+                        .addGap(18, 18, 18)
+                        .addComponent(jButton5)
+                        .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                    .addGroup(jPanel1Layout.createSequentialGroup()
+                        .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addComponent(jTextField9_valorRestri1, javax.swing.GroupLayout.PREFERRED_SIZE, 62, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addComponent(jLabel12)
+                            .addComponent(jTextField9_valorRestri2, javax.swing.GroupLayout.PREFERRED_SIZE, 62, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addComponent(jTextField9_valorRestri3, javax.swing.GroupLayout.PREFERRED_SIZE, 62, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addComponent(jTextField9_valorRestri4, javax.swing.GroupLayout.PREFERRED_SIZE, 62, javax.swing.GroupLayout.PREFERRED_SIZE))
+                        .addGap(0, 0, Short.MAX_VALUE))))
+        );
+        jPanel1Layout.setVerticalGroup(
+            jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(jPanel1Layout.createSequentialGroup()
+                .addGap(11, 11, 11)
+                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(jLabel1)
+                    .addComponent(jTextField1_id, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(jLabel11)
+                    .addComponent(jLabel12, javax.swing.GroupLayout.PREFERRED_SIZE, 20, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addGroup(jPanel1Layout.createSequentialGroup()
+                        .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addGroup(jPanel1Layout.createSequentialGroup()
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 22, Short.MAX_VALUE)
+                                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
+                                    .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                                        .addComponent(jTextField2_nome, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                        .addComponent(jLabel2)
+                                        .addComponent(checkbox1_numMaq, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                                    .addGroup(jPanel1Layout.createSequentialGroup()
+                                        .addComponent(jTextField9_valorRestri1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                        .addGap(1, 1, 1)))
+                                .addGap(19, 19, 19)
+                                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                                    .addComponent(jLabel3)
+                                    .addComponent(jFormattedTextField1_dataInicio, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                                .addGap(18, 18, 18)
+                                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                                    .addComponent(jLabel6)
+                                    .addComponent(jFormattedTextField1_dataFim, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                                .addGap(18, 18, 18)
+                                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                                    .addComponent(jLabel10)
+                                    .addComponent(jTextField1_ii, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                                .addGap(18, 18, 18)
+                                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                                    .addComponent(jLabel9)
+                                    .addComponent(jTextField2_taxa, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                            .addGroup(jPanel1Layout.createSequentialGroup()
+                                .addGap(60, 60, 60)
+                                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
+                                    .addComponent(checkbox3_mdo, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                    .addComponent(jTextField9_valorRestri2, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                                    .addGroup(jPanel1Layout.createSequentialGroup()
+                                        .addGap(19, 19, 19)
+                                        .addComponent(checkbox2_tempo, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                        .addGap(19, 19, 19)
+                                        .addComponent(checkbox4_dinheiro, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                                    .addGroup(jPanel1Layout.createSequentialGroup()
+                                        .addGap(18, 18, 18)
+                                        .addComponent(jTextField9_valorRestri3, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                        .addGap(18, 18, 18)
+                                        .addComponent(jTextField9_valorRestri4, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                                .addGap(0, 0, Short.MAX_VALUE)))
+                        .addGap(27, 27, 27))
+                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel1Layout.createSequentialGroup()
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                        .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                            .addComponent(jButton1)
+                            .addComponent(jButton4)
+                            .addComponent(jButton5))
+                        .addContainerGap())))
+        );
+
+        javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
+        getContentPane().setLayout(layout);
+        layout.setHorizontalGroup(
+            layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(layout.createSequentialGroup()
+                .addContainerGap()
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING, false)
+                    .addComponent(jScrollPane1)
+                    .addComponent(jPanel1, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                    .addComponent(jButton2, javax.swing.GroupLayout.PREFERRED_SIZE, 79, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+        );
+        layout.setVerticalGroup(
+            layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                .addComponent(jPanel1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGap(28, 28, 28)
+                .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 190, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(jButton2)
+                .addGap(5, 5, 5))
+        );
+
+        pack();
+    }// </editor-fold>//GEN-END:initComponents
+
+    private void tabelaProjetosMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_tabelaProjetosMouseClicked
+         //ver dados do projeto selecionado nos devidos campos
+         int i = tabelaProjetos.getSelectedRow();
+         TableModel model = tabelaProjetos.getModel();
+         jTextField1_id.setText(model.getValueAt(i,0).toString());
+         jTextField2_nome.setText(model.getValueAt(i,1).toString());
+         jTextField2_taxa.setText(model.getValueAt(i,5).toString());
+         jTextField9_valorRestri1.setText(model.getValueAt(i,7).toString());
+         jTextField1_ii.setText(model.getValueAt(i,4).toString());
+         String data_inicio;
+         if(model.getValueAt(i,2)!=null) data_inicio = model.getValueAt(i,2).toString();
+         else data_inicio = "0000-00-00";
+         jFormattedTextField1_dataInicio.setText(data_inicio);
+         String data_fim;
+         if(model.getValueAt(i,3)!=null) data_fim = model.getValueAt(i,3).toString();
+         else data_fim = "0000-00-00";
+         jFormattedTextField1_dataFim.setText(data_fim);
+         
+         checkbox1_numMaq.setState(false);
+         checkbox3_mdo.setState(false);
+         checkbox2_tempo.setState(false);
+         checkbox4_dinheiro.setState(false);
+         
+         String restricoes = model.getValueAt(i,6).toString();
+         String div = ",";
+         String [] dividirRestricoes = restricoes.split(div);
+         for(int j=0; j<dividirRestricoes.length; j++){
+             if(dividirRestricoes[j].equals("Número de Máquinas")){
+                 checkbox1_numMaq.setState(true);
+             }else if(dividirRestricoes[j].equals("Mão-de-Obra")){
+                 checkbox3_mdo.setState(true);
+             }else if(dividirRestricoes[j].equals("Tempo")){
+                 checkbox2_tempo.setState(true);
+             }else if(dividirRestricoes[j].equals("Dinheiro")){
+                 checkbox4_dinheiro.setState(true);
+             }
+         }
+    }//GEN-LAST:event_tabelaProjetosMouseClicked
+
+    private void jButton2ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton2ActionPerformed
+         dispose();
+    }//GEN-LAST:event_jButton2ActionPerformed
+
+    private void jButton5ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton5ActionPerformed
+        String query = "DELETE FROM `projeto` WHERE `id` = '"+jTextField1_id.getText()+"'";
+
+        try {
+            executarQuerySQL(query, "Deleted");
+        } catch (SQLException ex) {
+            Logger.getLogger(registarProj.class.getName()).log(Level.SEVERE, null, ex);
+        }
+    }//GEN-LAST:event_jButton5ActionPerformed
+
+    private void jButton4ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton4ActionPerformed
+       
+        String restricoes="";
+        if(checkbox1_numMaq.getState()){
+            restricoes+="Número de Máquinas+";
+        }
+         if(checkbox3_mdo.getState()){
+            restricoes+="Mão-de-Obra+";
+        }
+         if(checkbox2_tempo.getState()){
+            restricoes+="Tempo+";
+        }
+         if(checkbox4_dinheiro.getState()){
+            restricoes+="Dinheiro+";
+        }
+        
+         
+        
+        String query = "UPDATE `projeto` SET `id` = '"+jTextField1_id.getText()+"',`nome`='"+jTextField2_nome.getText()
+                +"',`dataInicio`='"+jFormattedTextField1_dataInicio.getText()+"',`dataFim`='"+jFormattedTextField1_dataFim.getText()
+                +"',`investimentoInicial`='"+jTextField1_ii.getText()+"',`taxa`='"+jTextField2_taxa.getText()
+                +"',`restricoes`='"+restricoes+"',`valorRestricao`='"+jTextField9_valorRestri1.getText()
+                +"' WHERE `id` = '"+jTextField1_id.getText()+"'";
+
+        try {
+            executarQuerySQL(query, "Updated");
+        } catch (SQLException ex) {
+            Logger.getLogger(registarProj.class.getName()).log(Level.SEVERE, null, ex);
+        }
+    }//GEN-LAST:event_jButton4ActionPerformed
+
+    private void jButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton1ActionPerformed
+
+        String restricoes="";
+         if(checkbox1_numMaq.getState()){
+            restricoes+="Número de Máquinas+";
+        }
+         if(checkbox3_mdo.getState()){
+            restricoes+="Mão-de-Obra+";
+        }
+         if(checkbox2_tempo.getState()){
+            restricoes+="Tempo+";
+        }
+         if(checkbox4_dinheiro.getState()){
+            restricoes+="Dinheiro+";
+        }
+                
+        
+        String query = "INSERT INTO `projeto`(`id`, `nome`,`dataInicio`,`dataFim`,`investimentoInicial`,`taxa`,`restricoes`,`valorRestricao`) VALUES ('"
+                +jTextField1_id.getText()+"','"+jTextField2_nome.getText()+"','"+jFormattedTextField1_dataInicio.getText()
+                +"','"+jFormattedTextField1_dataFim.getText()+"','"+jTextField1_ii.getText()+"','"+jTextField2_taxa.getText()+"','"
+                +restricoes+"','"+jTextField9_valorRestri1.getText()+"')";
+
+  
+        try {            
+            
+            executarQuerySQL(query, "Inserted");
+        } catch (SQLException ex) {
+            Logger.getLogger(registarProj.class.getName()).log(Level.SEVERE, null, ex);
+        }
+    }//GEN-LAST:event_jButton1ActionPerformed
+
+    private void jTextField1_idActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jTextField1_idActionPerformed
+        // TODO add your handling code here:
+    }//GEN-LAST:event_jTextField1_idActionPerformed
+
+    private void jTextField9_valorRestri3ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jTextField9_valorRestri3ActionPerformed
+    }//GEN-LAST:event_jTextField9_valorRestri3ActionPerformed
+
+    private void jTextField9_valorRestri1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jTextField9_valorRestri1ActionPerformed
+    }//GEN-LAST:event_jTextField9_valorRestri1ActionPerformed
+
+    private void jTextField9_valorRestri2ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jTextField9_valorRestri2ActionPerformed
+    }//GEN-LAST:event_jTextField9_valorRestri2ActionPerformed
+
+    private void jTextField9_valorRestri4ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jTextField9_valorRestri4ActionPerformed
+    }//GEN-LAST:event_jTextField9_valorRestri4ActionPerformed
+
+    private void checkbox1_numMaqItemStateChanged(java.awt.event.ItemEvent evt) {//GEN-FIRST:event_checkbox1_numMaqItemStateChanged
+        if(checkbox1_numMaq.getState()){
+            jTextField9_valorRestri1.setVisible(true);
+       } else jTextField9_valorRestri1.setVisible(false);
+       
+        validate();
+        repaint();
+    }//GEN-LAST:event_checkbox1_numMaqItemStateChanged
+
+    private void checkbox3_mdoItemStateChanged(java.awt.event.ItemEvent evt) {//GEN-FIRST:event_checkbox3_mdoItemStateChanged
+            if(checkbox3_mdo.getState()){
+                jTextField9_valorRestri2.setVisible(true);
+            }else jTextField9_valorRestri2.setVisible(false);
+      
+            validate();
+            repaint();
+    }//GEN-LAST:event_checkbox3_mdoItemStateChanged
+
+    private void checkbox2_tempoItemStateChanged(java.awt.event.ItemEvent evt) {//GEN-FIRST:event_checkbox2_tempoItemStateChanged
+         if(checkbox2_tempo.getState()){
+                jTextField9_valorRestri3.setVisible(true);
+            }else jTextField9_valorRestri3.setVisible(false);
+      
+            validate();
+            repaint();
+    }//GEN-LAST:event_checkbox2_tempoItemStateChanged
+
+    private void checkbox4_dinheiroItemStateChanged(java.awt.event.ItemEvent evt) {//GEN-FIRST:event_checkbox4_dinheiroItemStateChanged
+         if(checkbox4_dinheiro.getState()){
+                jTextField9_valorRestri4.setVisible(true);
+          }else jTextField9_valorRestri4.setVisible(false);
+      
+            validate();
+            repaint();
+    }//GEN-LAST:event_checkbox4_dinheiroItemStateChanged
+
+    private void setIcon() {
+        setIconImage(Toolkit.getDefaultToolkit().getImage(getClass().getResource("logo.png")));
+    }
+    /**
+     * @param args the command line arguments
+     */
+    public static void main(String args[]) {
+        /* Set the Nimbus look and feel */
+        //<editor-fold defaultstate="collapsed" desc=" Look and feel setting code (optional) ">
+        /* If Nimbus (introduced in Java SE 6) is not available, stay with the default look and feel.
+         * For details see http://download.oracle.com/javase/tutorial/uiswing/lookandfeel/plaf.html 
+         */
+        try {
+            for (javax.swing.UIManager.LookAndFeelInfo info : javax.swing.UIManager.getInstalledLookAndFeels()) {
+                if ("Nimbus".equals(info.getName())) {
+                    javax.swing.UIManager.setLookAndFeel(info.getClassName());
+                    break;
+                }
+            }
+        } catch (ClassNotFoundException ex) {
+            java.util.logging.Logger.getLogger(registarProj.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+        } catch (InstantiationException ex) {
+            java.util.logging.Logger.getLogger(registarProj.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+        } catch (IllegalAccessException ex) {
+            java.util.logging.Logger.getLogger(registarProj.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+        } catch (javax.swing.UnsupportedLookAndFeelException ex) {
+            java.util.logging.Logger.getLogger(registarProj.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+        }
+        //</editor-fold>  
+        
+        /* Create and display the form */
+        java.awt.EventQueue.invokeLater(new Runnable() {
+            public void run() {
+                new registarProj().setVisible(true);
+            }
+        });
+    }
+
+    // Variables declaration - do not modify//GEN-BEGIN:variables
+    private javax.swing.ButtonGroup buttonGroup1;
+    private java.awt.Checkbox checkbox1_numMaq;
+    private java.awt.Checkbox checkbox2_tempo;
+    private java.awt.Checkbox checkbox3_mdo;
+    private java.awt.Checkbox checkbox4_dinheiro;
+    private javax.swing.JButton jButton1;
+    private javax.swing.JButton jButton2;
+    private javax.swing.JButton jButton4;
+    private javax.swing.JButton jButton5;
+    private javax.swing.JFormattedTextField jFormattedTextField1_dataFim;
+    private javax.swing.JFormattedTextField jFormattedTextField1_dataInicio;
+    private javax.swing.JLabel jLabel1;
+    private javax.swing.JLabel jLabel10;
+    private javax.swing.JLabel jLabel11;
+    private javax.swing.JLabel jLabel12;
+    private javax.swing.JLabel jLabel2;
+    private javax.swing.JLabel jLabel3;
+    private javax.swing.JLabel jLabel6;
+    private javax.swing.JLabel jLabel9;
+    private javax.swing.JPanel jPanel1;
+    private javax.swing.JScrollPane jScrollPane1;
+    private javax.swing.JTextField jTextField1_id;
+    private javax.swing.JTextField jTextField1_ii;
+    private javax.swing.JTextField jTextField2_nome;
+    private javax.swing.JTextField jTextField2_taxa;
+    private javax.swing.JTextField jTextField9_valorRestri1;
+    private javax.swing.JTextField jTextField9_valorRestri2;
+    private javax.swing.JTextField jTextField9_valorRestri3;
+    private javax.swing.JTextField jTextField9_valorRestri4;
+    private javax.swing.JTable tabelaProjetos;
+    // End of variables declaration//GEN-END:variables
+}
