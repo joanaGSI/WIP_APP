@@ -26,7 +26,7 @@ final static String user   = "root";
         try{
             Class.forName(driver); //Carrega o driver especificado
             Connection conn=DriverManager.getConnection(url, user, pass);
-            System.out.println("Connected!");
+            System.out.println("Connected to database!");
             return conn;
              
         }catch(Exception e){
